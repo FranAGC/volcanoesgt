@@ -4,15 +4,7 @@
     <div id="fb-root"></div>
 
     <!-- 1. NAVBAR -->
-    <nav :class="['navbar', { 'navbar--scrolled': isScrolled }]">
-      <div class="navbar__container">
-        <ul class="navbar__links">
-          <li><a href="#inicio">Inicio</a></li>
-          <li><a href="#volcanes">Volcanes</a></li>
-          <li><a href="#guias">Guías</a></li>
-        </ul>
-      </div>
-    </nav>
+    <NavBar :transparent="true" />
 
     <!-- 2. HERO SECTION -->
     <header id="inicio" class="hero">
@@ -50,6 +42,8 @@
           v-for="volcano in popularVolcanoes"
           :key="volcano.id"
           class="card volcano-card"
+          @click="router.push({ name: 'Volcanoes', params: { id: volcano.id } })"
+          style="cursor: pointer"
         >
           <!-- Solo inyecta background-image si existe la URL para evitar petición 404 -->
           <div
@@ -185,17 +179,16 @@
     </section>
 
     <!-- 6. FOOTER -->
-    <footer class="footer">
-      <div class="footer__bottom">
-        <p>&copy; {{ new Date().getFullYear() }} VolcanoesGT. Todos los derechos reservados.</p>
-      </div>
-    </footer>
+    <Footer />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, nextTick, onUnmounted } from "vue";
+import { useRouter } from 'vue-router';
 import "./HomeView.css";
+import NavBar from "@/components/NavBar.vue";
+import Footer from "@/components/Footer.vue";
 import {
   isInstagram,
   isTwitter,
@@ -212,6 +205,7 @@ import { getVolcanoes, getPopularVolcanoes, getSocialPosts } from "@/services/vo
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
+const router = useRouter();
 const isScrolled       = ref(false);
 const popularState     = ref({ loading: true, error: false });
 const postsState       = ref({ loading: true, error: false });

@@ -1,0 +1,354 @@
+.volcanoes-view {
+  min-height: 100vh;
+  background-color: #f5f0e8; /* --color-light from HomeView */
+  color: #1a1a1a; /* --color-text */
+  padding-top: 80px; /* Space for fixed navbar */
+  display: flex;
+  flex-direction: column;
+}
+
+.volcanoes-layout {
+  display: flex;
+  flex-direction: row;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  flex-grow: 1;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+/* ─── SIDEBAR (LEFT) ──────────────────────────────────────────────────────── */
+
+.sidebar-toggle-wrapper {
+  display: none; /* Hidden on desktop */
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.sidebar-toggle-btn {
+  background-color: #e25822; /* --color-secondary */
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: #c04a1c;
+}
+
+.volcanoes-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.region-group {
+  margin-bottom: 1.5rem;
+}
+
+.region-group:last-child {
+  margin-bottom: 0;
+}
+
+.region-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #1a1a2e; /* --color-primary */
+  border-bottom: 2px solid #e25822; /* --color-secondary */
+  padding-bottom: 0.3rem;
+}
+
+.region-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.region-list li {
+  margin-bottom: 0.4rem;
+}
+
+.volcano-btn {
+  background: none;
+  border: none;
+  padding: 0.4rem 0.5rem;
+  color: #6b7280; /* --color-muted */
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: left;
+  width: 100%;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.volcano-btn:hover {
+  background-color: rgba(226, 88, 34, 0.1);
+  color: #e25822;
+}
+
+.volcano-btn--active {
+  color: #e25822; /* --color-secondary */
+  font-weight: 700;
+  background-color: rgba(226, 88, 34, 0.1);
+}
+
+/* ─── MAIN CONTENT (RIGHT) ────────────────────────────────────────────────── */
+
+.volcanoes-main-content {
+  flex-grow: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  width: calc(100% - 280px - 3rem);
+}
+
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #6b7280;
+}
+
+.error-state {
+  color: #d32f2f;
+}
+
+.volcano-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.details-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.details-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #1a1a2e; /* --color-primary */
+}
+
+.details-image-wrapper {
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 16 / 9;
+  border: 4px solid #1a1a2e; /* Match home view primary color */
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f0e8;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.details-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.details-image-wrapper:hover .details-image {
+  transform: scale(1.05);
+}
+
+.details-image-fallback {
+  color: #6b7280;
+  font-size: 1.2rem;
+}
+
+/* Tabs */
+.details-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  transition: color 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #1a1a2e;
+}
+
+.tab-btn--active {
+  color: #e25822; /* --color-secondary */
+}
+
+.tab-divider {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #e9ecef;
+}
+
+/* Info Table */
+.details-content {
+  width: 100%;
+}
+
+.info-table {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #fdfdfd;
+  border-radius: 8px;
+  padding: 1.5rem 0;
+}
+
+/* Vertical line for the table */
+.info-table::after {
+  content: '';
+  position: absolute;
+  top: 1.5rem;
+  bottom: 1.5rem;
+  left: 50%;
+  width: 2px;
+  background-color: #e25822; /* --color-secondary line */
+  z-index: 1;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 0.8rem;
+  position: relative;
+  z-index: 2;
+}
+
+.info-label {
+  text-align: right;
+  padding-right: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.info-value {
+  text-align: left;
+  padding-left: 1.5rem;
+  color: #1a1a1a;
+}
+
+.tourist-info {
+  text-align: center;
+  padding: 2rem;
+  color: #1a1a1a;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+/* ─── MOBILE RESPONSIVE ───────────────────────────────────────────────────── */
+@media (max-width: 850px) {
+  .volcanoes-layout {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .sidebar-toggle-wrapper {
+    display: block;
+  }
+  
+  .volcanoes-sidebar {
+    position: static;
+    width: 100%;
+    margin-right: 0;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem; /* Remove vertical padding when closed */
+    transition: all 0.3s ease;
+    opacity: 0;
+  }
+  
+  .volcanoes-sidebar--open {
+    max-height: 1000px; /* Enough to show list */
+    padding: 1.5rem; /* Restore vertical padding */
+    margin-bottom: 1rem;
+    opacity: 1;
+  }
+  
+  .volcanoes-main-content {
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  .details-title {
+    font-size: 2rem;
+  }
+  
+  .details-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .tab-divider {
+    display: none;
+  }
+
+  /* Stack table on very small screens */
+  @media (max-width: 500px) {
+    .info-table::after {
+      display: none;
+    }
+    
+    .info-row {
+      grid-template-columns: 1fr;
+      text-align: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.5rem;
+    }
+    
+    .info-label {
+      text-align: center;
+      padding-right: 0;
+      color: #e25822;
+      margin-bottom: 0.2rem;
+    }
+    
+    .info-value {
+      text-align: center;
+      padding-left: 0;
+    }
+  }
+}

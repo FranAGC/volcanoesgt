@@ -59,6 +59,17 @@ export const getPopularVolcanoes = async (limit = 4, order = 'asc') => {
   return [...withPopularity, ...withoutPopularity].slice(0, limit)
 }
 
+/**
+ * Obtiene los detalles de un volcán específico por su ID.
+ * @param {number|string} id - ID del volcán.
+ * @returns {Promise<Object>} Detalles del volcán.
+ */
+export const getVolcanoById = async (id) => {
+  const url = `${BASE_URL}/volcanoes/${id}`
+  const res = await fetch(url)
+  return handleResponse(res)
+}
+
 // ─── Publicaciones ────────────────────────────────────────────────────────────
 
 /**
