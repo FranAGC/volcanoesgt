@@ -1,5 +1,46 @@
-# Vue 3 + Vite
+# VolcanoesGT
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Plataforma informativa sobre los volcanes de Guatemala.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Stack
+
+- Vue 3 (Composition API + `<script setup>`)
+- Vite 8
+- Vue Router 4
+- SCSS (estilos globales vía `src/styles/`)
+- CSS nativo por componente (`HomeView.css`)
+- `fetch` nativo — sin librerías HTTP externas
+
+## Variables de entorno
+
+Copia `.env.example` a `.env` y configura:
+
+```
+VITE_API_URL=http://localhost:8080/api/v1
+```
+
+## Comandos
+
+```bash
+pnpm dev       # Servidor de desarrollo en http://localhost:3000
+pnpm build     # Build de producción
+pnpm preview   # Preview del build
+pnpm lint      # Linting con ESLint
+```
+
+## Estructura
+
+```
+src/
+├── pages/
+│   ├── HomeView.vue   # Vista principal (única página)
+│   └── HomeView.css   # Estilos del componente
+├── router/
+│   └── index.js       # Configuración de rutas
+├── styles/
+│   ├── main.scss      # Punto de entrada global
+│   ├── _reset.scss    # Reset CSS
+│   └── _typography.scss # Base tipográfica
+├── App.vue            # Root component
+└── main.js            # Bootstrap de la aplicación
+```
