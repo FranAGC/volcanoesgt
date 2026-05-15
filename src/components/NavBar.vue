@@ -1,6 +1,10 @@
 <template>
   <nav :class="['navbar', { 'navbar--scrolled': isScrolled || !transparent }]">
     <div class="navbar__container">
+      <router-link :to="{ name: 'Home' }" class="navbar__logo">
+        🌋 Volcanoes<span class="logo-highlight">GT</span>
+      </router-link>
+      
       <ul class="navbar__links">
         <li><router-link :to="{ name: 'Home', hash: '#inicio' }">Inicio</router-link></li>
         <li><router-link :to="{ name: 'Volcanoes' }">Volcanes</router-link></li>
@@ -49,47 +53,92 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   padding: 1.5rem 0;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
-  background-color: #2a2d34; /* Color oscuro base de la imagen */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* Glassmorphism for scrolled or solid state */
+.navbar--scrolled {
+  background: rgba(15, 23, 42, 0.85); /* var(--color-primary) with opacity */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Si es transparente al inicio, no tiene fondo ni sombra */
 .navbar:not(.navbar--scrolled) {
   background-color: transparent;
   box-shadow: none;
+  border-bottom: 1px solid transparent;
 }
 
 .navbar__container {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 2rem;
+}
+
+.navbar__logo {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-highlight {
+  color: var(--color-secondary);
 }
 
 .navbar__links {
   display: flex;
-  gap: 2rem;
+  gap: 2.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .navbar__links a {
-  color: white;
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   font-weight: 500;
-  font-size: 1rem;
-  transition: opacity 0.2s ease;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.navbar__links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: var(--color-secondary);
+  transition: width 0.3s ease;
+  border-radius: var(--radius-full);
 }
 
 .navbar__links a:hover,
 .navbar__links a.router-link-exact-active {
-  opacity: 0.8;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  color: white;
+}
+
+.navbar__links a:hover::after,
+.navbar__links a.router-link-exact-active::after {
+  width: 100%;
 }
 
 /* Mobile responsive */
@@ -97,11 +146,12 @@ onUnmounted(() => {
   .navbar {
     padding: 1rem 0;
   }
+  .navbar__container {
+    flex-direction: column;
+    gap: 1rem;
+  }
   .navbar__links {
     gap: 1.5rem;
-  }
-  .navbar__links a {
-    font-size: 0.9rem;
   }
 }
 </style>
