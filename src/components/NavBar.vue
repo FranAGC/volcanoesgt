@@ -2,12 +2,12 @@
   <nav :class="['navbar', { 'navbar--scrolled': isScrolled || !transparent }]">
     <div class="navbar__container">
       <router-link :to="{ name: 'Home' }" class="navbar__logo">
-        🌋 Volcanoes<span class="logo-highlight">GT</span>
+        volcanes de<span class="logo-highlight"> guatemala</span>
       </router-link>
       
       <ul class="navbar__links">
         <li><router-link :to="{ name: 'Home', hash: '#inicio' }">Inicio</router-link></li>
-        <li><router-link :to="{ name: 'Volcanoes' }">Volcanes</router-link></li>
+        <li><router-link :to="{ name: 'Volcanoes' }">Explorar</router-link></li>
         <li><router-link :to="{ name: 'Home', hash: '#guias' }">Guías</router-link></li>
       </ul>
     </div>
@@ -52,26 +52,22 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 1.5rem 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1.2rem 0;
+  transition: all 0.4s ease;
   z-index: 100;
-  background-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
+  background-color: var(--color-bg);
 }
 
-/* Glassmorphism for scrolled or solid state */
 .navbar--scrolled {
-  background: rgba(15, 23, 42, 0.85); /* var(--color-primary) with opacity */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
-/* Si es transparente al inicio, no tiene fondo ni sombra */
 .navbar:not(.navbar--scrolled) {
   background-color: transparent;
-  box-shadow: none;
   border-bottom: 1px solid transparent;
 }
 
@@ -86,69 +82,55 @@ onUnmounted(() => {
 
 .navbar__logo {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: white;
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--color-text);
   text-decoration: none;
-  letter-spacing: -0.5px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.navbar:not(.navbar--scrolled) .navbar__logo,
+.navbar:not(.navbar--scrolled) .navbar__links a {
+  color: var(--color-primary); /* Use deep blue if transparent (on light hero) */
 }
 
 .logo-highlight {
+  font-weight: 600;
   color: var(--color-secondary);
 }
 
 .navbar__links {
   display: flex;
-  gap: 2.5rem;
+  gap: 3rem;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .navbar__links a {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-text-muted);
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  position: relative;
-  padding: 0.5rem 0;
-}
-
-.navbar__links a::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background-color: var(--color-secondary);
-  transition: width 0.3s ease;
-  border-radius: var(--radius-full);
+  font-weight: 400;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: color 0.3s ease;
 }
 
 .navbar__links a:hover,
 .navbar__links a.router-link-exact-active {
-  color: white;
-}
-
-.navbar__links a:hover::after,
-.navbar__links a.router-link-exact-active::after {
-  width: 100%;
+  color: var(--color-primary);
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
   .navbar {
-    padding: 1rem 0;
+    padding: 1.5rem 0;
   }
   .navbar__container {
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
   }
   .navbar__links {
     gap: 1.5rem;

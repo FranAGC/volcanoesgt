@@ -1,184 +1,121 @@
 <template>
   <div class="home-view">
-    <!-- fb-root requerido por el SDK de Facebook — debe estar una sola vez -->
+    <!-- fb-root requerido por el SDK de Facebook -->
     <div id="fb-root"></div>
 
-    <!-- 1. NAVBAR -->
-    <NavBar :transparent="true" />
+    <NavBar :transparent="false" />
 
-    <!-- 2. HERO SECTION -->
+    <!-- 1. HERO SECTION -->
     <header id="inicio" class="hero">
-      <div class="hero__overlay"></div>
       <div class="hero__content">
-        <h1 class="hero__title">Volcanes de Guatemala</h1>
+        <h1 class="hero__title">Descubre la altura<br/>de Guatemala.</h1>
         <p class="hero__subtitle">
-          Descubre la majestuosidad de la tierra viva. Una aventura inolvidable
-          te espera en las alturas.
+          Una exploración minimalista de la geografía volcánica del país.
         </p>
-        <button class="btn btn--primary" @click="scrollTo('volcanes')">
-          Explorar volcanes
-        </button>
       </div>
+      <!-- Imagen de fondo sutil o abstracta -->
+      <div class="hero__bg"></div>
     </header>
 
-    <!-- 3. LOS MÁS POPULARES -->
-    <section id="volcanes" class="section popular-section">
-      <h2 class="section__title">Los más populares</h2>
-
-      <div v-if="popularState.loading" class="grid-4">
-        <div v-for="i in 4" :key="i" class="card skeleton volcano-skeleton"></div>
-      </div>
-
-      <div v-else-if="popularState.error" class="error-msg">
-        <p>⚠️ Error al cargar los volcanes. Intenta de nuevo más tarde.</p>
-      </div>
-
-      <div v-else-if="popularVolcanoes.length === 0" class="empty-msg">
-        <p>No hay volcanes disponibles en este momento.</p>
-      </div>
-
-      <div v-else class="grid-4">
-        <div
-          v-for="volcano in popularVolcanoes"
-          :key="volcano.id"
-          class="card volcano-card"
-          @click="router.push({ name: 'Volcanoes', params: { id: volcano.id } })"
-          style="cursor: pointer"
-        >
-          <!-- Solo inyecta background-image si existe la URL para evitar petición 404 -->
-          <div
-            class="volcano-card__bg"
-            :style="volcano.imageUrl ? { backgroundImage: `url(${volcano.imageUrl})` } : {}"
-          >
-            <div v-if="!volcano.imageUrl" class="volcano-card__fallback">🌋</div>
-          </div>
-          <div class="volcano-card__overlay">
-            <h3 class="volcano-card__name">{{ volcano.name }}</h3>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MARQUEE — nombres de volcanes con scroll automático -->
-    <section v-if="allVolcanoNames.length" class="marquee-section">
-      <div class="marquee">
-        <div class="marquee__content">
-          <span
-            v-for="(name, index) in marqueeItems"
-            :key="`${index}-${name}`"
-            class="marquee__item"
-          >
-            {{ name }} <span class="marquee__separator">•</span>
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. PUBLICACIONES RECIENTES -->
-    <section class="section posts-section">
-      <h2 class="section__title">Publicaciones relevantes recientes</h2>
-
-      <div v-if="postsState.loading" class="grid-posts">
-        <div v-for="i in 4" :key="i" class="skeleton skeleton--tall"></div>
-      </div>
-
-      <div v-else-if="postsState.error" class="error-msg">
-        <p>⚠️ Error al cargar las publicaciones.</p>
-      </div>
-
-      <div v-else-if="posts.length === 0" class="empty-msg">
-        <p>No hay publicaciones disponibles en este momento.</p>
-      </div>
-
-      <div v-else class="grid-posts">
-        <div v-for="post in posts" :key="post.id" class="post-card">
-          <!-- Skeleton mientras el SDK renderiza el iframe -->
-          <div v-if="!post.isLoaded" class="post-card__skeleton skeleton"></div>
-
-          <!-- Embed container: data-post-id usado para detectar render del iframe -->
-          <div
-            :class="['post-card__embed', { 'is-hidden': !post.isLoaded }]"
-            :data-post-id="post.id"
-          >
-            <!-- INSTAGRAM -->
-            <blockquote
-              v-if="isInstagram(post.appPage) && !post.hasError"
-              class="instagram-media"
-              :data-instgrm-permalink="post.srcUrl"
-              data-instgrm-version="14"
-              style="max-width:540px; width:100%; margin:0 auto;"
-            ></blockquote>
-
-            <!-- X / TWITTER -->
-            <blockquote
-              v-else-if="isTwitter(post.appPage) && !post.hasError"
-              class="twitter-tweet"
-            >
-              <a :href="post.srcUrl"></a>
-            </blockquote>
-
-            <!-- FACEBOOK -->
-            <div
-              v-else-if="isFacebook(post.appPage) && !post.hasError"
-              class="fb-post"
-              :data-href="post.srcUrl"
-              data-width="500"
-            ></div>
-          </div>
-
-          <!-- Fallback: se muestra cuando hasError = true -->
-          <div v-if="post.hasError" class="post-card__fallback">
-            <div class="post-card__fallback-header">
-              <span
-                class="social-badge"
-                :style="{ background: getSocialColor(post.appPage) }"
-              >
-                {{ getSocialIcon(post.appPage) }}
-              </span>
-              <span class="volcano-badge">{{ post.volcanoName }}</span>
-            </div>
-            <p class="post-card__fallback-desc">{{ post.description }}</p>
-            <span class="post-card__fallback-date">{{ formatDate(post.createdAt) }}</span>
-            <a
-              :href="post.srcUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn btn--outline mt-auto"
-            >
-              Ver publicación
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. ESTADÍSTICAS -->
+    <!-- 2. ESTADÍSTICAS (Minimalistas) -->
     <section class="section stats-section" ref="statsSection">
-      <div class="grid-4 stats-grid">
+      <div class="stats-container">
         <div class="stat-item">
           <div class="stat-item__number">{{ animateStats ? totalVolcanoes : '0' }}</div>
-          <div class="stat-item__label">Volcanes en total</div>
+          <div class="stat-item__label">Volcanes Registrados</div>
         </div>
         <div class="stat-item">
           <div class="stat-item__number">{{ animateStats ? '3' : '0' }}</div>
-          <div class="stat-item__label">Activos constantemente</div>
+          <div class="stat-item__label">Con Actividad Constante</div>
         </div>
         <div class="stat-item">
           <div class="stat-item__number">
-            {{ animateStats ? '4220' : '0' }}<span class="stat-item__unit">m</span>
+            {{ animateStats ? '4,220' : '0' }}<span class="stat-item__unit">m</span>
           </div>
-          <div class="stat-item__label">Altura máxima (Tajumulco)</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-item__number">
-            {{ animateStats ? '100' : '0' }}<span class="stat-item__unit">%</span>
-          </div>
-          <div class="stat-item__label">Aventura garantizada</div>
+          <div class="stat-item__label">Elevación Máxima</div>
         </div>
       </div>
     </section>
 
-    <!-- 6. FOOTER -->
+    <!-- 3. LOS MÁS POPULARES (Sin tarjetas, lista elegante) -->
+    <section id="volcanes" class="section list-section">
+      <div class="section__header">
+        <h2 class="section__title">Destinos Frecuentes</h2>
+        <p class="section__desc">Los gigantes más visitados por exploradores y turistas.</p>
+      </div>
+
+      <div v-if="popularState.loading" class="loading-state">
+        Cargando destinos...
+      </div>
+      <div v-else-if="popularState.error" class="error-msg">
+        Error al cargar la información.
+      </div>
+      <div v-else-if="popularVolcanoes.length === 0" class="empty-msg">
+        No hay datos disponibles en este momento.
+      </div>
+      <div v-else class="elegant-list">
+        <div
+          v-for="(volcano, index) in popularVolcanoes"
+          :key="volcano.id"
+          class="list-item"
+          @click="router.push({ name: 'Volcanoes', params: { id: volcano.id } })"
+        >
+          <div class="list-item__number">0{{ index + 1 }}</div>
+          <div class="list-item__content">
+            <h3 class="list-item__name">{{ volcano.name }}</h3>
+            <p class="list-item__region">{{ volcano.region || 'Guatemala' }}</p>
+          </div>
+          <div class="list-item__action">
+            <span>Explorar</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. REDES SOCIALES (Guías / Novedades) -->
+    <section id="guias" class="section social-section">
+      <div class="section__header">
+        <h2 class="section__title">Novedades & Guías</h2>
+      </div>
+
+      <div v-if="postsState.loading" class="loading-state">
+        Cargando novedades...
+      </div>
+      <div v-else-if="postsState.error" class="error-msg">
+        Error al cargar las novedades.
+      </div>
+      <div v-else-if="posts.length === 0" class="empty-msg">
+        No hay publicaciones recientes.
+      </div>
+      <div v-else class="social-grid">
+        <div
+          v-for="post in posts"
+          :key="post.id"
+          class="social-item"
+        >
+          <div class="social-item__header">
+            <div class="social-icon" :style="{ color: getSocialColor(post.appPage) }">
+              <i :class="getSocialIcon(post.appPage)"></i>
+            </div>
+            <div class="social-meta">
+              <h4>{{ getSupportedNetwork(post.appPage) }}</h4>
+              <span>{{ formatDate(post.createdAt) }}</span>
+            </div>
+          </div>
+          <div class="social-item__body">
+            <!-- Si no hay iframe, se muestra el content plano de forma limpia -->
+            <p v-if="!post.isLoaded || post.hasError" class="social-item__content">
+              {{ post.content }}
+            </p>
+            <div v-html="post.htmlContent" class="embed-wrapper"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <Footer />
   </div>
 </template>
@@ -190,9 +127,6 @@ import "./HomeView.css";
 import NavBar from "@/components/NavBar.vue";
 import Footer from "@/components/Footer.vue";
 import {
-  isInstagram,
-  isTwitter,
-  isFacebook,
   getSupportedNetwork,
   loadSDKs,
   processEmbeds,
@@ -206,7 +140,6 @@ import { getVolcanoes, getPopularVolcanoes, getSocialPosts } from "@/services/vo
 // ─── State ────────────────────────────────────────────────────────────────────
 
 const router = useRouter();
-const isScrolled       = ref(false);
 const popularState     = ref({ loading: true, error: false });
 const postsState       = ref({ loading: true, error: false });
 const popularVolcanoes = ref([]);
@@ -221,9 +154,6 @@ let embedCancellers = []; // funciones cancel() de waitForIframe
 
 // ─── Computed ─────────────────────────────────────────────────────────────────
 
-/** Duplicado para la animación de marquee infinito */
-const marqueeItems = computed(() => [...allVolcanoNames.value, ...allVolcanoNames.value]);
-
 /** Total real de volcanes para la sección de estadísticas */
 const totalVolcanoes = computed(() =>
   allVolcanoNames.value.length > 0 ? String(allVolcanoNames.value.length) : "37"
@@ -231,26 +161,19 @@ const totalVolcanoes = computed(() =>
 
 // ─── Scroll ───────────────────────────────────────────────────────────────────
 
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > 50;
-};
-
 const scrollTo = (id) => {
   const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: "smooth" });
+  if (el) {
+    const y = el.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({ top: y, behavior: "smooth" });
+  }
 };
 
 // ─── Carga de datos ───────────────────────────────────────────────────────────
 
-/**
- * Carga los volcanes más populares desde el servicio.
- * El manejo de estados loading/error se gestiona aquí; el HTTP en volcanoService.
- * Popularity 'asc': menor número = más popular (ranking 1, 2, 3…).
- */
 const loadPopularVolcanoes = async () => {
   popularState.value = { loading: true, error: false };
   try {
-    // getPopularVolcanoes retorna el top-N ya ordenado y limitado
     const [popular, all] = await Promise.all([
       getPopularVolcanoes(4, 'asc'),
       getVolcanoes(),
@@ -264,7 +187,6 @@ const loadPopularVolcanoes = async () => {
   }
 };
 
-/** Carga publicaciones de redes sociales, inicializa los embeds y gestiona el polling por iframe. */
 const loadSocialPosts = async () => {
   postsState.value = { loading: true, error: false };
   try {
@@ -275,18 +197,15 @@ const loadSocialPosts = async () => {
       .slice(0, 4)
       .map((p) => ({ ...p, isLoaded: false, hasError: false }));
 
-    // Cargar únicamente los SDKs de las redes presentes en los posts
     const networks = [...new Set(
       posts.value.map((p) => getSupportedNetwork(p.appPage)).filter(Boolean)
     )];
     await loadSDKs(networks);
 
-    // Procesar embeds limitando el scope al contenedor de la sección
-    const postsContainer = document.querySelector('.posts-section');
+    const postsContainer = document.querySelector('.social-section');
     await nextTick();
     requestAnimationFrame(() => processEmbeds(postsContainer));
 
-    // Polling individual por post: detecta el iframe o activa el fallback
     embedCancellers = posts.value.map((p) =>
       waitForIframe(p.id, {
         onSuccess: () => {
@@ -325,12 +244,10 @@ const setupObserver = () => {
 // ─── Ciclo de vida ────────────────────────────────────────────────────────────
 
 onMounted(() => {
-  window.addEventListener("scroll", handleScroll);
   loadPopularVolcanoes();
   loadSocialPosts();
   setupObserver();
 
-  // nextTick garantiza que statsSection.value esté disponible tras el primer render
   nextTick(() => {
     if (statsSection.value && observer) {
       observer.observe(statsSection.value);
@@ -339,9 +256,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll);
   if (observer) observer.disconnect();
-  // Cancela todos los pollings activos de waitForIframe
   embedCancellers.forEach((cancel) => cancel());
   embedCancellers = [];
 });

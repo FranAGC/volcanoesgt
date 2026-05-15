@@ -49,7 +49,7 @@
                   class="details-image" 
                 />
                 <div v-else class="details-image-fallback">
-                  <span>imageUrl no disponible</span>
+                  <span>Fotografía no disponible</span>
                 </div>
               </div>
 

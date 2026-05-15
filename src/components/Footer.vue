@@ -2,10 +2,8 @@
   <footer class="footer">
     <div class="footer__container">
       <div class="footer__brand">
-        <h3>🌋 Volcanoes<span class="highlight">GT</span></h3>
-        <p>Descubre la majestuosidad de la tierra viva. Explora los volcanes de Guatemala con la mejor información.</p>
+        <h3>volcanes de<span class="logo-highlight"> guatemala</span></h3>
       </div>
-      
       <div class="footer__bottom">
         <p>&copy; {{ new Date().getFullYear() }} VolcanoesGT. Todos los derechos reservados.</p>
       </div>
@@ -15,11 +13,10 @@
 
 <style scoped>
 .footer {
-  background-color: var(--color-primary);
-  color: white;
-  padding: 4rem 2rem 2rem;
-  margin-top: 6rem;
-  border-top: 4px solid var(--color-secondary);
+  background-color: var(--color-bg-alt);
+  color: var(--color-text);
+  padding: 2rem 2rem 2rem;
+  margin-top: 1rem;
 }
 
 .footer__container {
@@ -29,38 +26,42 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 3rem;
+  gap: 1rem;
 }
 
 .footer__brand h3 {
   font-family: var(--font-heading);
-  font-size: 2rem;
-  color: white;
-  margin-bottom: 1rem;
-  letter-spacing: -0.5px;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.footer__brand .highlight {
+.footer__brand span {
+  font-weight: 600;
   color: var(--color-secondary);
 }
 
 .footer__brand p {
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 400px;
+  color: var(--color-text-muted);
+  max-width: 450px;
   margin: 0 auto;
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.8;
+  font-weight: 300;
 }
 
 .footer__bottom {
   width: 100%;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--color-border);
 }
 
 .footer__bottom p {
   margin: 0;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>
