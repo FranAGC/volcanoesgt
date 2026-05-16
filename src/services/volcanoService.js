@@ -70,6 +70,53 @@ export const getVolcanoById = async (id) => {
   return handleResponse(res)
 }
 
+// ─── Información Turística ─────────────────────────────────────────────────────
+
+/**
+ * Obtiene la información turística de un volcán específico por su ID.
+ * @param {number|string} id - ID del volcán.
+ * @returns {Promise<Object>} Información turística.
+ */
+export const getVolcanoTourism = async (id) => {
+  const url = `${BASE_URL}/volcano-tourism/${id}`
+  const res = await fetch(url)
+  return handleResponse(res)
+}
+
+// ─── Guías Locales ─────────────────────────────────────────────────────────────
+
+/**
+ * Obtiene los guías locales de un volcán específico por su ID.
+ * @param {number|string} id - ID del volcán.
+ * @returns {Promise<Array>} Lista de guías locales.
+ */
+export const getVolcanoGuides = async (id) => {
+  const url = `${BASE_URL}/guide-volcano/volcanoes/${id}`
+  const res = await fetch(url)
+  return handleResponse(res)
+}
+
+// ─── Guías Autoguiadas ─────────────────────────────────────────────────────────
+
+export const getSelfGuidedList = async (volcanoId) => {
+  const url = `${BASE_URL}/self-guided?volcanoId=${volcanoId}`
+  const res = await fetch(url)
+  return handleResponse(res)
+}
+
+export const getSelfGuidedById = async (id) => {
+  const url = `${BASE_URL}/self-guided/${id}`
+  const res = await fetch(url)
+  return handleResponse(res)
+}
+
+export const getSelfGuidedResources = async (selfGuidedId) => {
+  const url = `${BASE_URL}/src-volcanoes?selfguidedId=${selfGuidedId}`
+  const res = await fetch(url)
+  const data = await handleResponse(res)
+  return Array.isArray(data) ? data : []
+}
+
 // ─── Publicaciones ────────────────────────────────────────────────────────────
 
 /**

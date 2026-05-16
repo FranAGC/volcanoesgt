@@ -11,7 +11,10 @@
   display: flex;
   align-items: center;
   padding: 0 5%;
-  background-color: var(--color-bg-alt);
+  background: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%),
+    url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat;
+  background-attachment: fixed;
 }
 
 .hero__content {
@@ -210,16 +213,20 @@
 
 /* ─── REDES SOCIALES ─────────────────────────────────────────────────────────── */
 .social-section {
-  background-color: var(--color-bg-alt);
+  background-color: var(--color-bg); /* Use white for section */
 }
 
 .social-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2.5rem 2rem;
+  column-count: 2;
+  column-gap: 2rem;
 }
 
 .social-item {
+  break-inside: avoid;
+  margin-bottom: 2rem;
+  background-color: var(--color-bg-alt); /* Light gray flat card */
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -228,39 +235,44 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .social-icon {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .social-meta h4 {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.1rem;
+  text-transform: capitalize;
 }
 
 .social-meta span {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--color-text-muted);
 }
 
 .social-item__body {
   flex-grow: 1;
-  padding-left: 1rem;
-  border-left: 2px solid var(--color-border);
 }
 
 .social-item__content {
   font-size: 1rem;
   color: var(--color-text);
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .embed-wrapper {
   margin-top: 1rem;
+  width: 100%;
+}
+/* Ensure embeds don't overflow */
+.embed-wrapper iframe {
+  max-width: 100% !important;
+  border-radius: var(--radius-sm);
 }
 
 /* Utilities */
@@ -307,5 +319,8 @@
     transform: none;
     width: 100%;
     justify-content: flex-end;
+  }
+  .social-grid {
+    column-count: 1;
   }
 }

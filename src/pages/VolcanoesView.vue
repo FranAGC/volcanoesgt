@@ -3,37 +3,14 @@
     <NavBar :transparent="false" />
 
     <main class="volcanoes-layout">
-      <!-- Loading / Error states for main list -->
-      <div v-if="loadingList" class="loading-state">Cargando volcanes...</div>
-      <div v-else-if="errorList" class="error-state">Error al cargar la lista de volcanes.</div>
+      <VolcanoSidebar 
+        :selected-volcano-id="selectedVolcanoId" 
+        @select="selectVolcano" 
+        @loaded="onSidebarLoaded" 
+      />
 
-      <template v-else>
-        <div class="sidebar-toggle-wrapper">
-          <button class="sidebar-toggle-btn" @click="isSidebarOpen = !isSidebarOpen">
-            {{ isSidebarOpen ? 'Ocultar lista de volcanes' : 'Ver lista de volcanes' }}
-          </button>
-        </div>
-
-        <!-- Sidebar: Regions and Volcanoes -->
-        <aside :class="['volcanoes-sidebar', { 'volcanoes-sidebar--open': isSidebarOpen }]">
-          <div v-for="(volcanoes, region) in groupedVolcanoes" :key="region" class="region-group">
-            <h3 class="region-title">{{ region }}</h3>
-            <ul class="region-list">
-              <li v-for="volcano in volcanoes" :key="volcano.id">
-                <button 
-                  class="volcano-btn" 
-                  :class="{ 'volcano-btn--active': selectedVolcanoId === volcano.id }"
-                  @click="selectVolcano(volcano.id)"
-                >
-                  {{ volcano.name }}
-                </button>
-              </li>
-            </ul>
-          </div>
-        </aside>
-
-        <!-- Main Content: Selected Volcano Details -->
-        <div class="volcanoes-main-content" @click="isSidebarOpen = false">
+      <!-- Main Content: Selected Volcano Details -->
+      <div class="volcanoes-main-content">
           <section v-if="selectedVolcanoId" class="volcano-details">
             <div v-if="loadingDetails" class="loading-state">Cargando detalles...</div>
             <div v-else-if="errorDetails" class="error-state">Error al cargar los detalles del volcán.</div>
@@ -57,7 +34,7 @@
                 <button 
                   class="tab-btn" 
                   :class="{ 'tab-btn--active': activeTab === 'general' }"
-                  @click="activeTab = 'general'"
+                  @click="selectTab('general')"
                 >
                   Información General
                 </button>
@@ -65,9 +42,17 @@
                 <button 
                   class="tab-btn" 
                   :class="{ 'tab-btn--active': activeTab === 'tourist' }"
-                  @click="activeTab = 'tourist'"
+                  @click="selectTab('tourist')"
                 >
                   Información Turística
+                </button>
+                <span class="tab-divider">|</span>
+                <button 
+                  class="tab-btn" 
+                  :class="{ 'tab-btn--active': activeTab === 'guides' }"
+                  @click="selectTab('guides')"
+                >
+                  Guías Locales
                 </button>
               </div>
 
@@ -84,9 +69,20 @@
                   <div class="info-row">
                     <div class="info-label">Coordenadas</div>
                     <div class="info-value">
-                      {{ selectedVolcano.latitude != null && selectedVolcano.longitude != null 
-                        ? `${selectedVolcano.latitude}, ${selectedVolcano.longitude}` 
-                        : '-' }}
+                      <div class="coords-text">
+                        {{ selectedVolcano.latitude != null && selectedVolcano.longitude != null 
+                          ? `${selectedVolcano.latitude}, ${selectedVolcano.longitude}` 
+                          : '-' }}
+                      </div>
+                      <a 
+                        v-if="selectedVolcano.latitude != null && selectedVolcano.longitude != null"
+                        :href="`https://www.google.com/maps?q=${selectedVolcano.latitude},${selectedVolcano.longitude}`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="map-link"
+                      >
+                        Ver en Google Maps
+                      </a>
                     </div>
                   </div>
                   <div class="info-row">
@@ -123,15 +119,62 @@
                   </div>
                 </div>
                 <div v-else-if="activeTab === 'tourist'" class="tourist-info">
-                  <p>
-                    {{ selectedVolcano.description || 'No hay información turística disponible para este volcán en este momento.' }}
-                  </p>
+                  <div v-if="loadingTourist" class="loading-state">Cargando información turística...</div>
+                  <div v-else-if="errorTourist" class="error-state">Error al cargar la información turística.</div>
+                  <div v-else-if="touristInfo" class="info-table">
+                    <template v-for="field in touristFields" :key="field.key">
+                      <div class="info-row" v-if="touristInfo[field.key] !== undefined && touristInfo[field.key] !== null">
+                        <div class="info-label">{{ field.label }}</div>
+                        <div class="info-value">
+                          <template v-if="typeof touristInfo[field.key] === 'boolean'">
+                            <span v-if="touristInfo[field.key]" class="icon-check">✔️</span>
+                            <span v-else class="icon-cross">❌</span>
+                          </template>
+                          <template v-else>
+                            {{ touristInfo[field.key] }}
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                  <div v-else>
+                    <p>No hay información turística disponible para este volcán en este momento.</p>
+                  </div>
+                </div>
+                <div v-else-if="activeTab === 'guides'" class="guides-info">
+                  <div v-if="loadingGuides" class="loading-state">Cargando guías locales...</div>
+                  <div v-else-if="errorGuides" class="error-state">Error al cargar los guías locales.</div>
+                  <div v-else-if="guidesList && guidesList.length > 0" class="guides-table-container">
+                    <table class="guides-table">
+                      <thead>
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Whatsapp</th>
+                          <th>Enlace</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="guide in guidesList" :key="guide.guideId">
+                          <td>{{ guide.guideName }}</td>
+                          <td>
+                            {{ guide.guideWhatsapp }}
+                            <a :href="`https://wa.me/${guide.guideWhatsapp.replace(/\D/g, '')}`" target="_blank" rel="noopener noreferrer" style="margin-left: 8px; text-decoration: none; display: inline-flex; align-items: center;" title="Contactar por WhatsApp">
+                              <img :src="whatsappIcon" alt="WhatsApp" width="18" height="18" />
+                            </a>
+                          </td>
+                          <td><a href="#" style="text-decoration: underline; color: var(--primary-color, #2c3e50);">más información</a></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div v-else>
+                    <p>No hay guías locales disponibles para este volcán en este momento.</p>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
         </div>
-      </template>
     </main>
 
     <Footer />
@@ -143,57 +186,82 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import NavBar from '@/components/NavBar.vue';
 import Footer from '@/components/Footer.vue';
-import { getVolcanoes, getVolcanoById } from '@/services/volcanoService';
+import VolcanoSidebar from '@/components/VolcanoSidebar.vue';
+import { getVolcanoById, getVolcanoTourism, getVolcanoGuides } from '@/services/volcanoService';
+import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import './VolcanoesView.css';
 
 const route = useRoute();
 const router = useRouter();
 
 // State
-const loadingList = ref(true);
-const errorList = ref(false);
-const allVolcanoes = ref([]);
-
 const selectedVolcanoId = ref(null);
 const selectedVolcano = ref(null);
 const loadingDetails = ref(false);
 const errorDetails = ref(false);
 
 const activeTab = ref('general');
-const isSidebarOpen = ref(false);
 
-// Computed
-const groupedVolcanoes = computed(() => {
-  const groups = {};
-  allVolcanoes.value.forEach(v => {
-    const region = v.region || 'Sin Región';
-    if (!groups[region]) {
-      groups[region] = [];
-    }
-    groups[region].push(v);
-  });
-  return groups;
-});
+const touristInfo = ref(null);
+const loadingTourist = ref(false);
+const errorTourist = ref(false);
+
+const guidesList = ref([]);
+const loadingGuides = ref(false);
+const errorGuides = ref(false);
+
+const touristFields = [
+  { key: 'accessDifficulty', label: 'Dificultad de Acceso' },
+  { key: 'hikingTrail', label: 'Sendero' },
+  { key: 'guidedTourRequired', label: 'Guía Requerido' },
+  { key: 'entranceFeeUsd', label: 'Costo de Entrada (USD)' },
+  { key: 'bestSeason', label: 'Mejor Temporada' },
+  { key: 'nearestCity', label: 'Ciudad más Cercana' },
+  { key: 'distanceToCityKm', label: 'Distancia a la Ciudad (km)' },
+  { key: 'visitDurationHrs', label: 'Duración de la Visita (hrs)' },
+  { key: 'parking', label: 'Parqueo' },
+  { key: 'restrooms', label: 'Sanitarios' },
+  { key: 'visitorCenter', label: 'Centro de Visitantes' },
+  { key: 'campingAllowed', label: 'Se Permite Acampar' },
+  { key: 'foodNearby', label: 'Comida Cercana' },
+  { key: 'currentAlertLevel', label: 'Nivel de Alerta Actual' },
+  { key: 'emergencyContact', label: 'Contacto de Emergencia' },
+  { key: 'details', label: 'Detalles Adicionales' }
+];
 
 // Actions
-const loadVolcanoes = async () => {
-  loadingList.value = true;
-  errorList.value = false;
-  try {
-    const data = await getVolcanoes({ size: 100 });
-    allVolcanoes.value = data;
-    
-    // Auto-select volcano
-    if (route.params.id) {
-      selectVolcano(Number(route.params.id));
-    } else if (data.length > 0) {
-      selectVolcano(data[0].id);
+const onSidebarLoaded = (data) => {
+  if (route.params.id) {
+    selectVolcano(Number(route.params.id));
+  } else if (data.length > 0) {
+    selectVolcano(data[0].id);
+  }
+};
+
+const selectTab = async (tab) => {
+  activeTab.value = tab;
+  if (tab === 'tourist' && selectedVolcanoId.value && !touristInfo.value) {
+    loadingTourist.value = true;
+    errorTourist.value = false;
+    try {
+      touristInfo.value = await getVolcanoTourism(selectedVolcanoId.value);
+    } catch (err) {
+      console.error(err);
+      errorTourist.value = true;
+    } finally {
+      loadingTourist.value = false;
     }
-  } catch (err) {
-    console.error(err);
-    errorList.value = true;
-  } finally {
-    loadingList.value = false;
+  } else if (tab === 'guides' && selectedVolcanoId.value && guidesList.value.length === 0) {
+    loadingGuides.value = true;
+    errorGuides.value = false;
+    try {
+      guidesList.value = await getVolcanoGuides(selectedVolcanoId.value);
+    } catch (err) {
+      console.error(err);
+      errorGuides.value = true;
+    } finally {
+      loadingGuides.value = false;
+    }
   }
 };
 
@@ -202,7 +270,10 @@ const selectVolcano = async (id) => {
   
   selectedVolcanoId.value = id;
   activeTab.value = 'general';
-  isSidebarOpen.value = false;
+  touristInfo.value = null;
+  errorTourist.value = false;
+  guidesList.value = [];
+  errorGuides.value = false;
   
   // Update route without triggering full reload if it's different
   if (Number(route.params.id) !== id) {
@@ -223,9 +294,7 @@ const selectVolcano = async (id) => {
 };
 
 // Lifecycle
-onMounted(() => {
-  loadVolcanoes();
-});
+// (Handled by VolcanoSidebar's loaded event)
 
 // Watch route changes (if user clicks back/forward)
 watch(() => route.params.id, (newId) => {

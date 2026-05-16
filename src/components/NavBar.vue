@@ -7,8 +7,8 @@
       
       <ul class="navbar__links">
         <li><router-link :to="{ name: 'Home', hash: '#inicio' }">Inicio</router-link></li>
-        <li><router-link :to="{ name: 'Volcanoes' }">Explorar</router-link></li>
-        <li><router-link :to="{ name: 'Home', hash: '#guias' }">Guías</router-link></li>
+        <li><router-link :to="{ name: 'Volcanoes' }">Volcanes</router-link></li>
+        <li><router-link :to="{ name: 'Guides' }">Guias</router-link></li>
       </ul>
     </div>
   </nav>

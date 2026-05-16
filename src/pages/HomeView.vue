@@ -76,9 +76,9 @@
     </section>
 
     <!-- 4. REDES SOCIALES (Guías / Novedades) -->
-    <section id="guias" class="section social-section">
+    <section id="news" class="section social-section">
       <div class="section__header">
-        <h2 class="section__title">Novedades & Guías</h2>
+        <h2 class="section__title">Novedades</h2>
       </div>
 
       <div v-if="postsState.loading" class="loading-state">
@@ -105,7 +105,7 @@
               <span>{{ formatDate(post.createdAt) }}</span>
             </div>
           </div>
-          <div class="social-item__body">
+          <div class="social-item__body" :data-post-id="post.id">
             <!-- Si no hay iframe, se muestra el content plano de forma limpia -->
             <p v-if="!post.isLoaded || post.hasError" class="social-item__content">
               {{ post.content }}
@@ -134,6 +134,7 @@ import {
   getSocialColor,
   getSocialIcon,
   formatDate,
+  generateEmbedHtml
 } from "@/utils/embedUtils.js";
 import { getVolcanoes, getPopularVolcanoes, getSocialPosts } from "@/services/volcanoService.js";
 
@@ -195,7 +196,12 @@ const loadSocialPosts = async () => {
     posts.value = raw
       .filter((p) => getSupportedNetwork(p.appPage) !== null)
       .slice(0, 4)
-      .map((p) => ({ ...p, isLoaded: false, hasError: false }));
+      .map((p) => ({ 
+        ...p, 
+        isLoaded: false, 
+        hasError: false,
+        htmlContent: p.htmlContent || generateEmbedHtml(p.appPage, p.srcUrl)
+      }));
 
     const networks = [...new Set(
       posts.value.map((p) => getSupportedNetwork(p.appPage)).filter(Boolean)

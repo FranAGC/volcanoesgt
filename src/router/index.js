@@ -12,6 +12,11 @@ const routes = [
     component: () => import('@/pages/VolcanoesView.vue'),
   },
   {
+    path: '/guias/:id?',
+    name: 'Guides',
+    component: () => import('@/pages/GuidesView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/',
   },

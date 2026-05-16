@@ -16,18 +16,15 @@ const SDK_URLS = {
 
 /** Retorna true si appPage corresponde a Instagram. */
 export const isInstagram = (appPage) =>
-  Boolean(appPage?.toLowerCase().includes('instagram.com'))
+  appPage?.toLowerCase() === 'instagram'
 
 /** Retorna true si appPage corresponde a X / Twitter. */
 export const isTwitter = (appPage) =>
-  Boolean(
-    appPage?.toLowerCase().includes('x.com') ||
-    appPage?.toLowerCase().includes('twitter.com')
-  )
+  appPage?.toLowerCase() === 'x' || appPage?.toLowerCase() === 'twitter'
 
 /** Retorna true si appPage corresponde a Facebook. */
 export const isFacebook = (appPage) =>
-  Boolean(appPage?.toLowerCase().includes('facebook.com'))
+  appPage?.toLowerCase() === 'facebook'
 
 /**
  * Identifica la red social de un post.
@@ -208,4 +205,28 @@ export const formatDate = (dateString, locale = 'es-ES') => {
     month: 'long',
     year:  'numeric',
   }).format(date)
+}
+
+/**
+ * Genera el HTML necesario para embeber una publicación basado en su red social y URL.
+ * @param {string} appPage - Nombre de la red social (facebook, x, instagram).
+ * @param {string} srcUrl - URL original del post.
+ * @returns {string} Código HTML del embed.
+ */
+export const generateEmbedHtml = (appPage, srcUrl) => {
+  if (!srcUrl) return '';
+  
+  if (isTwitter(appPage)) {
+    return `<blockquote class="twitter-tweet"><a href="${srcUrl}"></a></blockquote>`;
+  }
+  if (isFacebook(appPage)) {
+    return `<div class="fb-post" data-href="${srcUrl}" data-width="auto"></div>`;
+  }
+  if (isInstagram(appPage)) {
+    // Añadimos parámetros a la URL para forzar embed responsivo
+    const cleanUrl = srcUrl.split('?')[0]; 
+    return `<blockquote class="instagram-media" data-instgrm-permalink="${cleanUrl}?utm_source=ig_embed" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><a href="${cleanUrl}"></a></blockquote>`;
+  }
+  
+  return `<a href="${srcUrl}" target="_blank" rel="noopener noreferrer">Ver publicación</a>`;
 }
