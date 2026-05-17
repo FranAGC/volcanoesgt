@@ -52,10 +52,6 @@
                   
                   <div class="info-table">
                     <div class="info-row">
-                      <div class="info-label">Nombre del Volcán</div>
-                      <div class="info-value">{{ guideDetails.volcanoName || selectedVolcano.name }}</div>
-                    </div>
-                    <div class="info-row">
                       <div class="info-label">Título</div>
                       <div class="info-value">{{ guideDetails.title }}</div>
                     </div>

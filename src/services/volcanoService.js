@@ -96,6 +96,16 @@ export const getVolcanoGuides = async (id) => {
   return handleResponse(res)
 }
 
+/**
+ * Obtiene los detalles de un guía por su ID.
+ * @param {number|string} id - ID del guía.
+ * @returns {Promise<Object>} Detalles del guía.
+ */
+export const getGuideById = async (id) => {
+  const url = `${BASE_URL}/guides/${id}`
+  const res = await fetch(url)
+  return handleResponse(res)
+}
 // ─── Guías Autoguiadas ─────────────────────────────────────────────────────────
 
 export const getSelfGuidedList = async (volcanoId) => {

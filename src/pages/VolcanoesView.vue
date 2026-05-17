@@ -162,7 +162,7 @@
                               <img :src="whatsappIcon" alt="WhatsApp" width="18" height="18" />
                             </a>
                           </td>
-                          <td><a href="#" style="text-decoration: underline; color: var(--primary-color, #2c3e50);">más información</a></td>
+                          <td><button class="more-info-btn" style="text-decoration: underline; color: var(--color-primary, #2c3e50); background: none; border: none; cursor: pointer; padding: 0; font: inherit;" @click.prevent="openGuideModal(guide.guideId)">más información</button></td>
                         </tr>
                       </tbody>
                     </table>
@@ -177,6 +177,46 @@
         </div>
     </main>
 
+    <!-- Modal para Información del Guía -->
+    <div v-if="isGuideModalOpen" class="guide-modal-overlay" @click.self="closeGuideModal">
+      <div class="guide-modal-content">
+        <button class="guide-modal-close" @click="closeGuideModal">✖</button>
+        <div v-if="loadingGuideDetails" class="loading-state">Cargando información del guía...</div>
+        <div v-else-if="errorGuideDetails" class="error-state">Error al cargar la información del guía.</div>
+        <div v-else-if="selectedGuideDetails" class="guide-profile">
+          <div class="guide-profile-header">
+            <img v-if="selectedGuideDetails.profilePhotoUrl" :src="selectedGuideDetails.profilePhotoUrl" alt="Foto del Guía" class="guide-photo" />
+            <div v-else class="guide-photo-fallback">👤</div>
+            <h2 class="guide-name">{{ selectedGuideDetails.firstName }} {{ selectedGuideDetails.lastName }}</h2>
+          </div>
+          <div class="info-table guide-info-table">
+            <template v-for="field in guideFields" :key="field.key">
+              <div class="info-row" v-if="getGuideFieldValue(field.key) !== undefined && getGuideFieldValue(field.key) !== null && getGuideFieldValue(field.key) !== '' && getGuideFieldValue(field.key).length !== 0">
+                <div class="info-label">{{ field.label }}</div>
+                <div class="info-value">
+                  <template v-if="typeof getGuideFieldValue(field.key) === 'boolean'">
+                    <span v-if="getGuideFieldValue(field.key)" class="icon-check">✔️</span>
+                    <span v-else class="icon-cross">❌</span>
+                  </template>
+                  <template v-else-if="Array.isArray(getGuideFieldValue(field.key))">
+                    <ul style="margin: 0; padding-left: 1rem;">
+                      <li v-for="(item, idx) in getGuideFieldValue(field.key)" :key="idx">{{ item }}</li>
+                    </ul>
+                  </template>
+                  <template v-else-if="['facebook', 'instagram', 'whatsapp'].includes(field.key)">
+                    <a :href="getSocialLink(field.key, getGuideFieldValue(field.key))" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: var(--color-primary);">{{ getGuideFieldValue(field.key) }}</a>
+                  </template>
+                  <template v-else>
+                    {{ getGuideFieldValue(field.key) }}
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <Footer />
   </div>
 </template>
@@ -187,7 +227,7 @@ import { useRoute, useRouter } from 'vue-router';
 import NavBar from '@/components/NavBar.vue';
 import Footer from '@/components/Footer.vue';
 import VolcanoSidebar from '@/components/VolcanoSidebar.vue';
-import { getVolcanoById, getVolcanoTourism, getVolcanoGuides } from '@/services/volcanoService';
+import { getVolcanoById, getVolcanoTourism, getVolcanoGuides, getGuideById } from '@/services/volcanoService';
 import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import './VolcanoesView.css';
 
@@ -210,6 +250,11 @@ const guidesList = ref([]);
 const loadingGuides = ref(false);
 const errorGuides = ref(false);
 
+const isGuideModalOpen = ref(false);
+const loadingGuideDetails = ref(false);
+const errorGuideDetails = ref(false);
+const selectedGuideDetails = ref(null);
+
 const touristFields = [
   { key: 'accessDifficulty', label: 'Dificultad de Acceso' },
   { key: 'hikingTrail', label: 'Sendero' },
@@ -229,6 +274,40 @@ const touristFields = [
   { key: 'details', label: 'Detalles Adicionales' }
 ];
 
+const guideFields = [
+  { key: 'phone', label: 'Teléfono' },
+  { key: 'email', label: 'Correo Electrónico' },
+  { key: 'nationality', label: 'Nacionalidad' },
+  { key: 'spokenLanguages', label: 'Idiomas Hablados' },
+  { key: 'bio', label: 'Biografía' },
+  { key: 'facebook', label: 'Facebook' },
+  { key: 'instagram', label: 'Instagram' },
+  { key: 'whatsapp', label: 'WhatsApp' },
+  { key: 'licenseNumber', label: 'Número de Licencia' },
+  { key: 'certified', label: 'Certificado' },
+  { key: 'experienceYears', label: 'Años de Experiencia' },
+  { key: 'pricePerDayUsd', label: 'Precio por Día (USD)' },
+  { key: 'maxGroupSize', label: 'Tamaño Máximo de Grupo' },
+  { key: 'volcanoesList', label: 'Volcanes Asignados' }
+];
+
+const getGuideFieldValue = (key) => {
+  if (!selectedGuideDetails.value) return null;
+  if (key === 'volcanoesList') {
+    return selectedGuideDetails.value.volcanoes?.map(v => v.name) || [];
+  }
+  return selectedGuideDetails.value[key];
+};
+
+const getSocialLink = (key, value) => {
+  if (!value) return '#';
+  if (key === 'whatsapp') return `https://wa.me/${value.replace(/\D/g, '')}`;
+  if (value.startsWith('http')) return value;
+  if (key === 'facebook') return `https://facebook.com/${value.replace(/^@/, '')}`;
+  if (key === 'instagram') return `https://instagram.com/${value.replace(/^@/, '')}`;
+  return value;
+};
+
 // Actions
 const onSidebarLoaded = (data) => {
   if (route.params.id) {
@@ -236,6 +315,29 @@ const onSidebarLoaded = (data) => {
   } else if (data.length > 0) {
     selectVolcano(data[0].id);
   }
+};
+
+const openGuideModal = async (guideId) => {
+  isGuideModalOpen.value = true;
+  loadingGuideDetails.value = true;
+  errorGuideDetails.value = false;
+  selectedGuideDetails.value = null;
+  document.body.style.overflow = 'hidden';
+
+  try {
+    selectedGuideDetails.value = await getGuideById(guideId);
+  } catch (err) {
+    console.error(err);
+    errorGuideDetails.value = true;
+  } finally {
+    loadingGuideDetails.value = false;
+  }
+};
+
+const closeGuideModal = () => {
+  isGuideModalOpen.value = false;
+  selectedGuideDetails.value = null;
+  document.body.style.overflow = '';
 };
 
 const selectTab = async (tab) => {

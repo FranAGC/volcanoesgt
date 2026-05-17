@@ -285,3 +285,118 @@
     padding: 1.5rem 0;
   }
 }
+
+/* ─── MODAL GUIA ──────────────────────────────────────────────────────────── */
+.guide-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.guide-modal-content {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 2rem;
+  border-radius: 8px;
+  animation: slideUp 0.4s ease forwards;
+}
+
+.guide-modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color 0.3s ease;
+  line-height: 1;
+}
+
+.guide-modal-close:hover {
+  color: var(--color-primary);
+}
+
+.guide-profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.guide-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 2px solid var(--color-border);
+}
+
+.guide-photo-fallback {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--color-bg-alt);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+  border: 2px solid var(--color-border);
+}
+
+.guide-name {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--color-primary);
+  margin: 0;
+  text-align: center;
+}
+
+.guide-info-table {
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .guide-modal-content {
+    padding: 2rem 1.5rem;
+  }
+}
